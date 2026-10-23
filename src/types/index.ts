@@ -90,5 +90,5 @@ export interface KosFilters {
   facilityIds?: number[];
   /** Max distance to the campus in km. */
   maxDistanceKm?: number;
-  sort?: "termurah" | "termahal" | "terdekat" | "rating";
+  sort?: "relevan" | "terbaru" | "termurah" | "termahal" | "terdekat" | "rating";
 }
