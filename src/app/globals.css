@@ -1,9 +1,9 @@
 /*
  * Carikos design tokens — the single source of truth for the UI look.
- * Colors: brand blue (blue-600 light / blue-500 dark) + success & warning for room status.
- * Fonts: Geist from next/font, mapped to --font-sans in :root.
+ * Theme: bohemian — warm ivory surfaces, terracotta brand, sage accents.
+ * Fonts: Geist (body) + Fraunces (headings) via next/font, mapped below.
  * Spacing: Tailwind's default 4px grid.
- * Radius: 0.625rem.
+ * Radius: 0.75rem (softer, crafty boho feel).
  * Touch: primary CTAs use size="lg" buttons (44px minimum tap target).
  */
 @import "tailwindcss";
@@ -17,7 +17,7 @@
   --color-foreground: var(--foreground);
   --font-sans: var(--font-sans);
   --font-mono: var(--font-geist-mono);
-  --font-heading: var(--font-sans);
+  --font-heading: var(--font-fraunces);
   --color-sidebar-ring: var(--sidebar-ring);
   --color-sidebar-border: var(--sidebar-border);
   --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
@@ -62,86 +62,87 @@
 }
 
 :root {
-  /* Map shadcn's font token to the Geist variable set in layout.tsx. */
+  /* Map shadcn's font tokens to the next/font variables set in layout.tsx. */
   --font-sans: var(--font-geist-sans);
-  --background: oklch(1 0 0);
-  --foreground: oklch(0.145 0 0);
-  --card: oklch(1 0 0);
-  --card-foreground: oklch(0.145 0 0);
-  --popover: oklch(1 0 0);
-  --popover-foreground: oklch(0.145 0 0);
-  /* Brand color: blue-600 (AA contrast on white, matches the campus vibe). */
-  --primary: oklch(0.546 0.245 262.881);
-  --primary-foreground: oklch(0.985 0 0);
-  --secondary: oklch(0.97 0 0);
-  --secondary-foreground: oklch(0.205 0 0);
-  --muted: oklch(0.97 0 0);
-  --muted-foreground: oklch(0.556 0 0);
-  --accent: oklch(0.97 0 0);
-  --accent-foreground: oklch(0.205 0 0);
-  --destructive: oklch(0.577 0.245 27.325);
+  --background: oklch(0.973 0.021 82);
+  --foreground: oklch(0.268 0.02 60);
+  --card: oklch(0.988 0.012 85);
+  --card-foreground: oklch(0.268 0.02 60);
+  --popover: oklch(0.988 0.012 85);
+  --popover-foreground: oklch(0.268 0.02 60);
+  /* Brand color: terracotta (AA contrast with cream surfaces). */
+  --primary: oklch(0.512 0.116 43);
+  --primary-foreground: oklch(0.986 0.014 85);
+  --secondary: oklch(0.929 0.03 80);
+  --secondary-foreground: oklch(0.32 0.025 60);
+  --muted: oklch(0.945 0.025 82);
+  --muted-foreground: oklch(0.51 0.026 68);
+  /* Accent: soft sage for hover/selected surfaces. */
+  --accent: oklch(0.918 0.04 125);
+  --accent-foreground: oklch(0.3 0.035 130);
+  --destructive: oklch(0.577 0.215 27.325);
   /* Status colors for room availability badges etc. */
-  --success: oklch(0.627 0.194 149.214);
-  --success-foreground: oklch(0.985 0 0);
-  --warning: oklch(0.769 0.188 70.08);
-  --warning-foreground: oklch(0.279 0.077 45.635);
-  --border: oklch(0.922 0 0);
-  --input: oklch(0.922 0 0);
+  --success: oklch(0.565 0.12 148);
+  --success-foreground: oklch(0.986 0.014 85);
+  --warning: oklch(0.772 0.135 80);
+  --warning-foreground: oklch(0.28 0.03 60);
+  --border: oklch(0.903 0.032 80);
+  --input: oklch(0.903 0.032 80);
   /* Focus ring follows the brand color for consistent focus states. */
-  --ring: oklch(0.546 0.245 262.881);
-  --chart-1: oklch(0.87 0 0);
-  --chart-2: oklch(0.556 0 0);
-  --chart-3: oklch(0.439 0 0);
-  --chart-4: oklch(0.371 0 0);
-  --chart-5: oklch(0.269 0 0);
-  --radius: 0.625rem;
-  --sidebar: oklch(0.985 0 0);
-  --sidebar-foreground: oklch(0.145 0 0);
-  --sidebar-primary: oklch(0.546 0.245 262.881);
-  --sidebar-primary-foreground: oklch(0.985 0 0);
-  --sidebar-accent: oklch(0.97 0 0);
-  --sidebar-accent-foreground: oklch(0.205 0 0);
-  --sidebar-border: oklch(0.922 0 0);
-  --sidebar-ring: oklch(0.546 0.245 262.881);
+  --ring: oklch(0.512 0.116 43);
+  --chart-1: oklch(0.512 0.116 43);
+  --chart-2: oklch(0.565 0.12 148);
+  --chart-3: oklch(0.772 0.135 80);
+  --chart-4: oklch(0.918 0.04 125);
+  --chart-5: oklch(0.35 0.03 60);
+  --radius: 0.75rem;
+  --sidebar: oklch(0.988 0.012 85);
+  --sidebar-foreground: oklch(0.268 0.02 60);
+  --sidebar-primary: oklch(0.512 0.116 43);
+  --sidebar-primary-foreground: oklch(0.986 0.014 85);
+  --sidebar-accent: oklch(0.929 0.03 80);
+  --sidebar-accent-foreground: oklch(0.32 0.025 60);
+  --sidebar-border: oklch(0.903 0.032 80);
+  --sidebar-ring: oklch(0.512 0.116 43);
 }
 
 .dark {
-  --background: oklch(0.145 0 0);
-  --foreground: oklch(0.985 0 0);
-  --card: oklch(0.205 0 0);
-  --card-foreground: oklch(0.985 0 0);
-  --popover: oklch(0.205 0 0);
-  --popover-foreground: oklch(0.985 0 0);
-  /* Brand color: blue-500 works better on dark backgrounds. */
-  --primary: oklch(0.623 0.214 259.815);
-  --primary-foreground: oklch(0.985 0 0);
-  --secondary: oklch(0.269 0 0);
-  --secondary-foreground: oklch(0.985 0 0);
-  --muted: oklch(0.269 0 0);
-  --muted-foreground: oklch(0.708 0 0);
-  --accent: oklch(0.269 0 0);
-  --accent-foreground: oklch(0.985 0 0);
+  --background: oklch(0.213 0.02 60);
+  --foreground: oklch(0.955 0.017 85);
+  --card: oklch(0.256 0.02 60);
+  --card-foreground: oklch(0.955 0.017 85);
+  --popover: oklch(0.256 0.02 60);
+  --popover-foreground: oklch(0.955 0.017 85);
+  /* Brand color: lighter terracotta for dark surfaces, with dark text. */
+  --primary: oklch(0.712 0.126 48);
+  --primary-foreground: oklch(0.213 0.02 60);
+  --secondary: oklch(0.314 0.025 60);
+  --secondary-foreground: oklch(0.955 0.017 85);
+  --muted: oklch(0.314 0.02 60);
+  --muted-foreground: oklch(0.713 0.023 75);
+  --accent: oklch(0.34 0.04 128);
+  --accent-foreground: oklch(0.955 0.017 85);
   --destructive: oklch(0.704 0.191 22.216);
-  --success: oklch(0.723 0.219 149.579);
-  --success-foreground: oklch(0.145 0 0);
-  --warning: oklch(0.769 0.188 70.08);
-  --warning-foreground: oklch(0.145 0 0);
-  --border: oklch(1 0 0 / 10%);
-  --input: oklch(1 0 0 / 15%);
-  --ring: oklch(0.623 0.214 259.815);
-  --chart-1: oklch(0.87 0 0);
-  --chart-2: oklch(0.556 0 0);
-  --chart-3: oklch(0.439 0 0);
-  --chart-4: oklch(0.371 0 0);
-  --chart-5: oklch(0.269 0 0);
-  --sidebar: oklch(0.205 0 0);
-  --sidebar-foreground: oklch(0.985 0 0);
-  --sidebar-primary: oklch(0.623 0.214 259.815);
-  --sidebar-primary-foreground: oklch(0.985 0 0);
-  --sidebar-accent: oklch(0.269 0 0);
-  --sidebar-accent-foreground: oklch(0.985 0 0);
-  --sidebar-border: oklch(1 0 0 / 10%);
-  --sidebar-ring: oklch(0.623 0.214 259.815);
+  --success: oklch(0.723 0.155 148);
+  --success-foreground: oklch(0.213 0.025 148);
+  --warning: oklch(0.79 0.128 80);
+  --warning-foreground: oklch(0.213 0.02 60);
+  --border: oklch(1 0 0 / 12%);
+  --input: oklch(1 0 0 / 16%);
+  --ring: oklch(0.712 0.126 48);
+  --chart-1: oklch(0.712 0.126 48);
+  --chart-2: oklch(0.723 0.155 148);
+  --chart-3: oklch(0.79 0.128 80);
+  --chart-4: oklch(0.34 0.04 128);
+  --chart-5: oklch(0.955 0.017 85);
+  --sidebar: oklch(0.256 0.02 60);
+  --sidebar-foreground: oklch(0.955 0.017 85);
+  --sidebar-primary: oklch(0.712 0.126 48);
+  --sidebar-primary-foreground: oklch(0.213 0.02 60);
+  --sidebar-accent: oklch(0.314 0.025 60);
+  --sidebar-accent-foreground: oklch(0.955 0.017 85);
+  --sidebar-border: oklch(1 0 0 / 12%);
+  --sidebar-ring: oklch(0.712 0.126 48);
 }
 
 @layer base {
