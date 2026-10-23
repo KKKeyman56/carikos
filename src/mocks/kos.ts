@@ -174,7 +174,7 @@ const SEEDS: KosSeed[] = [
     createdAt: "2026-09-09T09:00:00.000Z",
     updatedAt: "2026-10-19T05:00:00.000Z",
     photoUrls: [
-      "/photos/kamar-boho.jpg",
+      "/photos/kamar-boho.webp",
       "https://picsum.photos/seed/carikos-wisma-pelangi-putri-2/640/480",
       "https://picsum.photos/seed/carikos-wisma-pelangi-putri-3/640/480",
     ],
@@ -242,7 +242,7 @@ const SEEDS: KosSeed[] = [
     createdAt: "2026-09-21T08:30:00.000Z",
     updatedAt: "2026-10-22T07:00:00.000Z",
     photoUrls: [
-      "/photos/kamar-boho.jpg",
+      "/photos/kamar-boho.webp",
       "https://picsum.photos/seed/carikos-kelapa-dua-boarding-house-2/640/480",
       "https://picsum.photos/seed/carikos-kelapa-dua-boarding-house-3/640/480",
     ],
