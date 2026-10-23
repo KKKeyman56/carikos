@@ -40,6 +40,8 @@ export interface KosSeed {
   ratingAvg: number;
   createdAt: string;
   updatedAt: string;
+  /** Optional photo overrides; local files are served from /public/photos. */
+  photoUrls?: string[];
 }
 
 // NOTE: all coordinates and photo URLs are placeholder values; the photo
@@ -171,6 +173,11 @@ const SEEDS: KosSeed[] = [
     ratingAvg: 4.5,
     createdAt: "2026-09-09T09:00:00.000Z",
     updatedAt: "2026-10-19T05:00:00.000Z",
+    photoUrls: [
+      "/photos/kamar-boho.jpg",
+      "https://picsum.photos/seed/carikos-wisma-pelangi-putri-2/640/480",
+      "https://picsum.photos/seed/carikos-wisma-pelangi-putri-3/640/480",
+    ],
   },
   {
     id: 7,
@@ -234,6 +241,11 @@ const SEEDS: KosSeed[] = [
     ratingAvg: 4.9,
     createdAt: "2026-09-21T08:30:00.000Z",
     updatedAt: "2026-10-22T07:00:00.000Z",
+    photoUrls: [
+      "/photos/kamar-boho.jpg",
+      "https://picsum.photos/seed/carikos-kelapa-dua-boarding-house-2/640/480",
+      "https://picsum.photos/seed/carikos-kelapa-dua-boarding-house-3/640/480",
+    ],
   },
   {
     id: 10,
@@ -399,7 +411,9 @@ function kosFromSeed(seed: KosSeed): Kos {
       kosId: seed.id,
       ...room,
     })),
-    photoUrls: [1, 2, 3].map((n) => `https://picsum.photos/seed/carikos-${slug}-${n}/640/480`),
+    photoUrls:
+      seed.photoUrls ??
+      [1, 2, 3].map((n) => `https://picsum.photos/seed/carikos-${slug}-${n}/640/480`),
     ratingAvg: seed.ratingAvg,
     isBookmarked: false,
     createdAt: seed.createdAt,
