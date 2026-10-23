@@ -1,36 +1,37 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Carikos
 
-## Getting Started
+Aplikasi pencarian kos untuk mahasiswa dan pemilik kos di sekitar Universitas Gunadarma, Depok. Mayoritas pengguna akses dari HP, jadi semua desain mobile-first.
 
-First, run the development server:
+## Stack
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+- Next.js (App Router) + TypeScript strict
+- Tailwind CSS v4 + shadcn/ui
+- TanStack Query — fetch & cache
+- React Hook Form + Zod — form & validasi
+- Leaflet + react-leaflet + OpenStreetMap — peta lokasi
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## Menjalankan
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+1. `npm install`
+2. `cp .env.example .env.local`, isi nilainya
+3. `npm run dev`
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## Konvensi penting
 
-## Learn More
+- Semua request ke backend hanya lewat `src/lib/api/` (baca README di folder itu).
+- Tipe data bersama di `src/types/` = single source of truth. Hal yang belum dikonfirmasi backend ditandai `// ASSUMPTION:`.
+- Filter pencarian disimpan di URL search params supaya hasil bisa di-share.
+- Leaflet tidak support SSR: komponen peta wajib di-load dengan `dynamic(() => import(...), { ssr: false })`.
+- Setiap halaman yang fetch data wajib punya loading / empty / error state.
+- Tombol utama di HP pakai `size="lg"` (target sentuh minimal 44px).
 
-To learn more about Next.js, take a look at the following resources:
+## Git workflow
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+- Kerja di branch per fitur: `feat/search`, `feat/detail`, `feat/owner-dashboard`, `feat/auth`, dst.
+- Jangan push langsung ke `main` — merge lewat PR di GitHub.
+- Commit mengikuti Conventional Commits: `feat:`, `fix:`, `chore:`.
+- `main` harus selalu deployable; merge ke `main` otomatis deploy ke Vercel.
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+## Aksesibilitas dasar
 
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+Label di setiap input form, alt text di foto, kontras warna cukup (AA), target sentuh minimal 44px di HP.
