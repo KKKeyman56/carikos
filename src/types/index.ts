@@ -63,6 +63,13 @@ export interface Kos {
   facilities: Facility[];
   rooms: Room[];
   photoUrls: string[];
+  /** ASSUMPTION: house rules as plain text until backend defines the structure. */
+  rules: string[];
+  /**
+   * ASSUMPTION: single contact number for the WhatsApp flow. The real API may
+   * expose a nested owner object instead — adapt here, not in components.
+   */
+  ownerPhone: string;
   /** 0-5, rounded to one decimal. */
   ratingAvg: number;
   /** ASSUMPTION: computed client-side; may be provided by the API later. */

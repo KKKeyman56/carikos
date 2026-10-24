@@ -37,6 +37,8 @@ export interface KosSeed {
   distanceToCampusKm: number;
   facilityIds: number[];
   rooms: RoomSeed[];
+  /** Optional house rules; falls back to a shared default set. */
+  rules?: string[];
   ratingAvg: number;
   createdAt: string;
   updatedAt: string;
@@ -82,6 +84,13 @@ const SEEDS: KosSeed[] = [
     longitude: 106.8441,
     distanceToCampusKm: 1.2,
     facilityIds: [1, 2, 3, 4, 5, 10],
+    // Syariah house rules override the shared defaults.
+    rules: [
+      "Khusus mahasiswi muslimah",
+      "Dilarang mengundang tamu lawan jenis",
+      "Jam malam pukul 22.00",
+      "Dilarang membawa hewan peliharaan",
+    ],
     rooms: [
       { name: "Kamar standar", size: "3x3 m", status: "terisi", monthlyPrice: 1100000 },
       { name: "Kamar plus AC", size: "3x4 m", status: "kosong", monthlyPrice: 1400000 },
@@ -323,6 +332,12 @@ const SEEDS: KosSeed[] = [
     longitude: 106.8067,
     distanceToCampusKm: 3.8,
     facilityIds: [2, 3, 7, 12],
+    // Syariah house rules override the shared defaults.
+    rules: [
+      "Khusus mahasiswi muslimah",
+      "Dilarang mengundang tamu lawan jenis",
+      "Jam malam pukul 22.00",
+    ],
     rooms: [
       { name: "Kamar atas", size: "3x4 m", status: "kosong", monthlyPrice: 850000 },
       { name: "Kamar bawah", size: "3x4 m", status: "terisi", monthlyPrice: 1100000 },
@@ -376,6 +391,22 @@ const SEEDS: KosSeed[] = [
 
 const facilityById = new Map(FACILITIES.map((facility) => [facility.id, facility]));
 
+/** Default house rules for kos without an explicit list in the seed. */
+const DEFAULT_RULES = [
+  "Dilarang mengundang tamu menginap tanpa izin pemilik",
+  "Tagihan sewa jatuh tempo setiap tanggal 1",
+  "Dilarang membawa hewan peliharaan",
+  "Tidak ada jam malam — akses pintu 24 jam",
+];
+
+/**
+ * ASSUMPTION: deterministic placeholder contact number derived from the seed
+ * IDs. Replace with real owner data once the API lands.
+ */
+function placeholderOwnerPhone(seedId: number, ownerId: number): string {
+  return `0812${String(seedId).padStart(4, "0")}${String(ownerId).padStart(2, "0")}9`;
+}
+
 function toSlug(name: string): string {
   return name
     .toLowerCase()
@@ -414,6 +445,8 @@ function kosFromSeed(seed: KosSeed): Kos {
     photoUrls:
       seed.photoUrls ??
       [1, 2, 3].map((n) => `https://picsum.photos/seed/carikos-${slug}-${n}/640/480`),
+    rules: seed.rules ?? DEFAULT_RULES,
+    ownerPhone: placeholderOwnerPhone(seed.id, seed.ownerId),
     ratingAvg: seed.ratingAvg,
     isBookmarked: false,
     createdAt: seed.createdAt,
