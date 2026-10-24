@@ -1,36 +1,12 @@
 import Link from "next/link";
 import { MapPin, Star } from "lucide-react";
 
+import { GenderBadge } from "@/components/kos/gender-badge";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import { formatIDR } from "@/lib/format";
-import type { Kos, KosGender } from "@/types";
-
-const GENDER_BADGE: Record<KosGender, { label: string; className: string }> = {
-  // Bohemian palette: sage for putra, dusty rose for putri, mustard for campur.
-  putra: {
-    label: "Putra",
-    className: "bg-emerald-100 text-emerald-800 dark:bg-emerald-950 dark:text-emerald-300",
-  },
-  putri: {
-    label: "Putri",
-    className: "bg-rose-100 text-rose-800 dark:bg-rose-950 dark:text-rose-300",
-  },
-  campur: {
-    label: "Campur",
-    className: "bg-amber-100 text-amber-800 dark:bg-amber-950 dark:text-amber-300",
-  },
-};
-
-function GenderBadge({ gender }: { gender: KosGender }) {
-  const config = GENDER_BADGE[gender];
-  return (
-    <Badge variant="outline" className={config.className}>
-      {config.label}
-    </Badge>
-  );
-}
+import type { Kos } from "@/types";
 
 interface KosCardProps {
   kos: Kos;
