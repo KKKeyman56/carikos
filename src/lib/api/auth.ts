@@ -26,7 +26,11 @@ export class AuthError extends Error {
  * "email sudah terdaftar" path is reachable). Plaintext passwords exist only
  * in this mock; never do this against a real backend.
  */
-const MOCK_USERS: Array<User & { password: string }> = [
+interface StoredUser extends User {
+  password: string;
+}
+
+const SEED_USERS: StoredUser[] = [
   {
     id: 1001,
     name: "Ayu Purnama",
@@ -47,8 +51,41 @@ const MOCK_USERS: Array<User & { password: string }> = [
   },
 ];
 
+/** Where self-registered mock accounts live so they survive page reloads. */
+const REGISTERED_USERS_KEY = "carikos.registeredUsers";
+
+function loadRegisteredUsers(): StoredUser[] {
+  if (typeof window === "undefined") return [];
+  const raw = window.localStorage.getItem(REGISTERED_USERS_KEY);
+  if (raw === null) return [];
+  try {
+    const parsed: unknown = JSON.parse(raw);
+    if (!Array.isArray(parsed)) return [];
+    return parsed.filter(
+      (entry): entry is StoredUser =>
+        typeof entry === "object" &&
+        entry !== null &&
+        "id" in entry &&
+        "email" in entry &&
+        "password" in entry,
+    );
+  } catch {
+    return [];
+  }
+}
+
+function persistRegisteredUsers(users: StoredUser[]): void {
+  if (typeof window === "undefined") return;
+  window.localStorage.setItem(REGISTERED_USERS_KEY, JSON.stringify(users));
+}
+
+/** Seed accounts + accounts registered in this browser, newest last. */
+function allUsers(): StoredUser[] {
+  return [...SEED_USERS, ...loadRegisteredUsers()];
+}
+
 /** Returns the shared user shape without ever leaking the mock password. */
-function toPublicUser(user: User & { password: string }): User {
+function toPublicUser(user: StoredUser): User {
   return {
     id: user.id,
     name: user.name,
@@ -70,7 +107,7 @@ export async function login(credentials: LoginRequest): Promise<User> {
   await sleep(MOCK_LATENCY_MS);
 
   const email = credentials.email.trim().toLowerCase();
-  const match = MOCK_USERS.find(
+  const match = allUsers().find(
     (user) => user.email === email && user.password === credentials.password,
   );
   if (!match) {
@@ -90,12 +127,13 @@ export async function register(payload: RegisterRequest): Promise<User> {
   await sleep(MOCK_LATENCY_MS);
 
   const email = payload.email.trim().toLowerCase();
-  if (MOCK_USERS.some((user) => user.email === email)) {
+  if (allUsers().some((user) => user.email === email)) {
     throw new AuthError("EMAIL_SUDAH_TERDAFTAR", "Email ini sudah terdaftar.");
   }
 
-  const created: User & { password: string } = {
-    id: Math.max(...MOCK_USERS.map((user) => user.id)) + 1,
+  const withPassword: StoredUser[] = loadRegisteredUsers();
+  const created: StoredUser = {
+    id: Math.max(...allUsers().map((user) => user.id)) + 1,
     name: payload.name.trim(),
     email,
     phone: payload.phone.trim(),
@@ -104,6 +142,8 @@ export async function register(payload: RegisterRequest): Promise<User> {
     avatarUrl: null,
     password: payload.password,
   };
-  MOCK_USERS.push(created);
+  // Persist so the account survives reloads; real auth lives server-side.
+  withPassword.push(created);
+  persistRegisteredUsers(withPassword);
   return toPublicUser(created);
 }
