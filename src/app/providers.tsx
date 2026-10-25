@@ -3,6 +3,8 @@
 import { useState, type ReactNode } from "react";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 
+import { AuthProvider } from "@/hooks/use-auth";
+
 // Client-only providers mounted in the root layout, so the layout itself
 // stays a Server Component.
 export function Providers({ children }: { children: ReactNode }) {
@@ -23,5 +25,9 @@ export function Providers({ children }: { children: ReactNode }) {
       }),
   );
 
-  return <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>;
+  return (
+    <QueryClientProvider client={queryClient}>
+      <AuthProvider>{children}</AuthProvider>
+    </QueryClientProvider>
+  );
 }

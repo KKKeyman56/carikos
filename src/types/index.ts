@@ -99,3 +99,20 @@ export interface KosFilters {
   maxDistanceKm?: number;
   sort?: "relevan" | "terbaru" | "termurah" | "termahal" | "terdekat" | "rating";
 }
+
+/**
+ * ASSUMPTION: auth request/response shapes until the backend contract is set.
+ * Passwords travel plainly inside this mock layer only — the real API is
+ * expected to handle hashing, sessions, and tokens server-side (Tahap 5).
+ */
+export interface LoginRequest {
+  email: string;
+  password: string;
+}
+
+export interface RegisterRequest {
+  name: string;
+  phone: string;
+  email: string;
+  password: string;
+}

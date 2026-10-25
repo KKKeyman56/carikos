@@ -1,16 +1,35 @@
 "use client";
 
 import Link from "next/link";
-import { BedDouble, Menu } from "lucide-react";
+import { BedDouble, LogOut, Menu } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
+import { useAuth } from "@/hooks/use-auth";
 
 // ASSUMPTION: routes /kos, /login, /register are built in Tahap 2+; until then
 // these links lead to 404 pages.
 const NAV_LINKS = [{ href: "/kos", label: "Cari Kos" }] as const;
 
 function NavActions() {
+  const { user, signOut } = useAuth();
+
+  // Signed in: greeting + logout replace the CTAs.
+  if (user) {
+    const firstName = user.name.split(" ")[0];
+    return (
+      <div className="hidden items-center gap-2 md:flex">
+        <span className="max-w-44 truncate text-sm font-medium" title={user.name}>
+          Halo, {firstName}
+        </span>
+        <Button variant="outline" onClick={() => signOut()}>
+          <LogOut aria-hidden="true" />
+          Keluar
+        </Button>
+      </div>
+    );
+  }
+
   return (
     <div className="hidden items-center gap-1 md:flex">
       <Button variant="ghost" render={<Link href="/login" />}>
@@ -22,6 +41,8 @@ function NavActions() {
 }
 
 export function Navbar() {
+  const { user, signOut } = useAuth();
+
   return (
     <header className="sticky top-0 z-50 border-b bg-background/95 backdrop-blur-xs supports-[backdrop-filter]:bg-background/75">
       <div className="mx-auto flex h-16 w-full max-w-5xl items-center justify-between gap-2 px-4">
@@ -50,9 +71,16 @@ export function Navbar() {
 
         {/* Mobile: the primary CTA stays visible, the rest lives in the drawer */}
         <div className="flex items-center gap-1 md:hidden">
-          <Button size="lg" render={<Link href="/register" />}>
-            Daftar
-          </Button>
+          {user ? (
+            <Button variant="outline" onClick={() => signOut()}>
+              <LogOut aria-hidden="true" />
+              Keluar
+            </Button>
+          ) : (
+            <Button size="lg" render={<Link href="/register" />}>
+              Daftar
+            </Button>
+          )}
           <Sheet>
             <SheetTrigger
               render={<Button variant="ghost" size="icon-lg" aria-label="Buka menu navigasi" />}
@@ -73,12 +101,27 @@ export function Navbar() {
                     {link.label}
                   </Link>
                 ))}
-                <Link
-                  href="/login"
-                  className="flex min-h-11 items-center rounded-lg px-3 text-base font-medium hover:bg-accent"
-                >
-                  Masuk
-                </Link>
+                {user ? (
+                  <>
+                    <p className="mt-2 truncate rounded-lg bg-muted px-3 py-2 text-sm text-muted-foreground">
+                      Halo, {user.name}
+                    </p>
+                    <button
+                      type="button"
+                      onClick={() => signOut()}
+                      className="flex min-h-11 items-center rounded-lg px-3 text-base font-medium hover:bg-accent"
+                    >
+                      Keluar
+                    </button>
+                  </>
+                ) : (
+                  <Link
+                    href="/login"
+                    className="flex min-h-11 items-center rounded-lg px-3 text-base font-medium hover:bg-accent"
+                  >
+                    Masuk
+                  </Link>
+                )}
               </nav>
             </SheetContent>
           </Sheet>
