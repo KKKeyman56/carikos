@@ -113,28 +113,31 @@ export function LoginForm() {
             error={errors.password?.message}
             className="gap-1.5"
           >
-            <div className="relative">
-              <Input
-                type={showsPassword ? "text" : "password"}
-                autoComplete="current-password"
-                placeholder="password123"
-                className="h-11 pr-12"
-                {...register("password")}
-              />
-              <button
-                type="button"
-                onClick={() => setShowsPassword((value) => !value)}
-                aria-pressed={showsPassword}
-                aria-label={showsPassword ? "Sembunyikan password" : "Tampilkan password"}
-                className="absolute inset-y-0 right-0 flex w-11 items-center justify-center rounded-lg text-muted-foreground transition-colors outline-none hover:text-foreground focus-visible:ring-3 focus-visible:ring-ring/50"
-              >
-                {showsPassword ? (
-                  <EyeOff aria-hidden="true" className="size-4" />
-                ) : (
-                  <Eye aria-hidden="true" className="size-4" />
-                )}
-              </button>
-            </div>
+            {(wiring) => (
+              <div className="relative">
+                <Input
+                  {...register("password")}
+                  {...wiring}
+                  type={showsPassword ? "text" : "password"}
+                  autoComplete="current-password"
+                  placeholder="password123"
+                  className="h-11 pr-12"
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowsPassword((value) => !value)}
+                  aria-pressed={showsPassword}
+                  aria-label={showsPassword ? "Sembunyikan password" : "Tampilkan password"}
+                  className="absolute inset-y-0 right-0 flex w-11 items-center justify-center rounded-lg text-muted-foreground transition-colors outline-none hover:text-foreground focus-visible:ring-3 focus-visible:ring-ring/50"
+                >
+                  {showsPassword ? (
+                    <EyeOff aria-hidden="true" className="size-4" />
+                  ) : (
+                    <Eye aria-hidden="true" className="size-4" />
+                  )}
+                </button>
+              </div>
+            )}
           </FormField>
 
           <Button type="submit" size="lg" disabled={isSubmitting}>
