@@ -72,11 +72,22 @@ export interface Kos {
   ownerPhone: string;
   /** 0-5, rounded to one decimal. */
   ratingAvg: number;
-  /** ASSUMPTION: computed client-side; may be provided by the API later. */
-  isBookmarked: boolean;
   /** ISO date strings. */
   createdAt: string;
   updatedAt: string;
+}
+
+/**
+ * A saved/bookmarked kos. Kept out of the `Kos` shape because it is per-user
+ * state, not a property of the listing itself.
+ *
+ * ASSUMPTION: the backend may return favorites as a relation or a list of IDs
+ * instead of this envelope — adapt inside `lib/api/favorites.ts`.
+ */
+export interface Favorite {
+  kosId: number;
+  /** ISO date string, used to keep the newest favorites first. */
+  createdAt: string;
 }
 
 /** ASSUMPTION: pagination envelope — confirm the exact shape with the backend. */
