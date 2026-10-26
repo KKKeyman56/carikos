@@ -14,6 +14,7 @@ import { Input } from "@/components/ui/input";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useAuth } from "@/hooks/use-auth";
 import { AuthError, login } from "@/lib/api/auth";
+import { safeRedirectPath } from "@/lib/utils";
 import type { LoginRequest } from "@/types";
 import { loginSchema, type LoginFormData } from "@/lib/validations/auth";
 
@@ -50,6 +51,7 @@ function CardBodySkeleton() {
 export function LoginForm() {
   const router = useRouter();
   const searchParams = useSearchParams();
+  const redirectTo = safeRedirectPath(searchParams.get("redirect"));
   const { signIn } = useAuth();
   const [showsPassword, setShowsPassword] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
@@ -71,8 +73,7 @@ export function LoginForm() {
         password: values.password,
       } satisfies LoginRequest);
       signIn(user);
-      const redirect = searchParams.get("redirect");
-      router.replace(redirect?.startsWith("/") ? redirect : "/");
+      router.replace(redirectTo ?? "/");
     } catch (error) {
       setErrorMessage(
         error instanceof AuthError ? error.message : "Waduh, koneksi bermasalah. Coba lagi ya.",
@@ -155,7 +156,7 @@ export function LoginForm() {
         <p className="mt-4 text-center text-sm text-muted-foreground">
           belum punya akun?{" "}
           <Link
-            href="/register"
+            href={redirectTo ? `/register?redirect=${encodeURIComponent(redirectTo)}` : "/register"}
             className="font-medium text-primary underline-offset-4 hover:underline"
           >
             Daftar

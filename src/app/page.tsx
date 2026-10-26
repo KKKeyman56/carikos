@@ -3,8 +3,8 @@ import Link from "next/link";
 import { Navbar } from "@/components/layout/navbar";
 import { Button } from "@/components/ui/button";
 
-// NOTE: placeholder landing page for the first deploy. Tahap 2 will turn the
-// search screen into the real entry point.
+// NOTE: landing page kept intentionally simple; the search screen at /kos is
+// the real entry point once the catalogue is ready.
 export default function HomePage() {
   return (
     <>

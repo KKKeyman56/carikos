@@ -2,7 +2,7 @@
  * Single source of truth for data shapes shared between frontend and backend.
  *
  * The backend contract is not final yet, so everything marked with
- * `ASSUMPTION:` must be re-checked before API integration (Tahap 5).
+ * `ASSUMPTION:` must be re-checked before API integration.
  */
 
 /** ASSUMPTION: user roles as defined in the spec. */
@@ -114,7 +114,7 @@ export interface KosFilters {
 /**
  * ASSUMPTION: auth request/response shapes until the backend contract is set.
  * Passwords travel plainly inside this mock layer only — the real API is
- * expected to handle hashing, sessions, and tokens server-side (Tahap 5).
+ * expected to handle hashing, sessions, and tokens server-side.
  */
 export interface LoginRequest {
   email: string;
