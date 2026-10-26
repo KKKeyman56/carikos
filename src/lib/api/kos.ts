@@ -14,7 +14,7 @@ function sleep(ms: number): Promise<void> {
  * Lists kos matching the search filters.
  *
  * NOTE: mock implementation — filtering/sorting happens in memory. When the
- * real API is ready (Tahap 5), replace the body with a fetch to
+ * real API is ready, replace the body with a fetch to
  * `${process.env.NEXT_PUBLIC_API_BASE_URL}/kos` and keep this exact signature,
  * so no component code changes.
  */

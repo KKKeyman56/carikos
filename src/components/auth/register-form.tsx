@@ -15,6 +15,7 @@ import { Input } from "@/components/ui/input";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useAuth } from "@/hooks/use-auth";
 import { AuthError, register as registerAccount } from "@/lib/api/auth";
+import { safeRedirectPath } from "@/lib/utils";
 import type { RegisterRequest } from "@/types";
 import { registerSchema, type RegisterFormData } from "@/lib/validations/auth";
 
@@ -45,6 +46,7 @@ export function RegisterFormSkeleton() {
 export function RegisterForm() {
   const router = useRouter();
   const searchParams = useSearchParams();
+  const redirectTo = safeRedirectPath(searchParams.get("redirect"));
   const { signIn } = useAuth();
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
@@ -76,8 +78,7 @@ export function RegisterForm() {
       } satisfies RegisterRequest);
       signIn(user);
       // Same gated-flow redirect contract as the login form.
-      const redirect = searchParams.get("redirect");
-      router.replace(redirect?.startsWith("/") ? redirect : "/");
+      router.replace(redirectTo ?? "/");
     } catch (error) {
       setErrorMessage(
         error instanceof AuthError ? error.message : "Waduh, koneksi bermasalah. Coba lagi ya.",
@@ -211,7 +212,7 @@ export function RegisterForm() {
         <p className="mt-4 text-center text-sm text-muted-foreground">
           Udah punya akun?{" "}
           <Link
-            href="/login"
+            href={redirectTo ? `/login?redirect=${encodeURIComponent(redirectTo)}` : "/login"}
             className="font-medium text-primary underline-offset-4 hover:underline"
           >
             Masuk
