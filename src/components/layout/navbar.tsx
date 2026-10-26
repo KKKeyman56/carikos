@@ -7,8 +7,8 @@ import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
 import { useAuth } from "@/hooks/use-auth";
 
-// ASSUMPTION: routes /kos, /login, /register are built in Tahap 2+; until then
-// these links lead to 404 pages.
+// Favorit only makes sense once someone is signed in, so it is appended
+// dynamically in Navbar instead of living in this static list.
 const NAV_LINKS = [{ href: "/kos", label: "Cari Kos" }] as const;
 
 function NavActions() {
@@ -42,6 +42,9 @@ function NavActions() {
 
 export function Navbar() {
   const { user, signOut } = useAuth();
+  const navLinks = user
+    ? [...NAV_LINKS, { href: "/favorit", label: "Favorit" } as const]
+    : NAV_LINKS;
 
   return (
     <header className="sticky top-0 z-50 border-b bg-background/95 backdrop-blur-xs supports-[backdrop-filter]:bg-background/75">
@@ -56,7 +59,7 @@ export function Navbar() {
 
         {/* Desktop navigation */}
         <nav aria-label="Navigasi utama" className="hidden items-center gap-1 md:flex">
-          {NAV_LINKS.map((link) => (
+          {navLinks.map((link) => (
             <Link
               key={link.href}
               href={link.href}
@@ -92,7 +95,7 @@ export function Navbar() {
                 <SheetTitle>Carikos</SheetTitle>
               </SheetHeader>
               <nav aria-label="Menu navigasi" className="flex flex-col gap-1 p-4 pt-0">
-                {NAV_LINKS.map((link) => (
+                {navLinks.map((link) => (
                   <Link
                     key={link.href}
                     href={link.href}

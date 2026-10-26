@@ -448,7 +448,6 @@ function kosFromSeed(seed: KosSeed): Kos {
     rules: seed.rules ?? DEFAULT_RULES,
     ownerPhone: placeholderOwnerPhone(seed.id, seed.ownerId),
     ratingAvg: seed.ratingAvg,
-    isBookmarked: false,
     createdAt: seed.createdAt,
     updatedAt: seed.updatedAt,
   };

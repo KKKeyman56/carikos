@@ -4,7 +4,7 @@ import { useQuery } from "@tanstack/react-query";
 import { ArrowLeft, Check, Heart, MapPin, MessageCircle, Star } from "lucide-react";
 import dynamic from "next/dynamic";
 import Link from "next/link";
-import { useState, type ReactNode } from "react";
+import type { ReactNode } from "react";
 
 import { GenderBadge } from "@/components/kos/gender-badge";
 import { KosGallery } from "@/components/kos/kos-gallery";
@@ -12,6 +12,8 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
+import { useAuth } from "@/hooks/use-auth";
+import { useFavorites, useToggleFavorite } from "@/hooks/use-favorites";
 import { getKos } from "@/lib/api/kos";
 import { formatIDR } from "@/lib/format";
 import { cn } from "cn";
@@ -117,12 +119,15 @@ export function KosDetail({ slug }: { slug: string }) {
 }
 
 function KosDetailContent({ kos }: { kos: Kos }) {
-  const [isSaved, setIsSaved] = useState(kos.isBookmarked);
+  const { user } = useAuth();
+  const favoritesQuery = useFavorites();
+  const toggleFavorite = useToggleFavorite();
+  const isSaved = favoritesQuery.favorites.some((favorite) => favorite.id === kos.id);
   const availableRooms = kos.rooms.filter((room) => room.status === "kosong").length;
   const hasPriceRange = kos.monthlyPriceMax > kos.monthlyPriceMin;
 
-  // ASSUMPTION: the favorite toggle is local-only for now; persisting it needs
-  // auth + backend support, so it lands in its own stage.
+  // Favorites live behind the api layer (`lib/api/favorites.ts`, mock-backed per
+  // account); the real endpoints can replace the mock without touching this view.
   const waMessage = encodeURIComponent(
     `Halo, saya tertarik dengan ${kos.name} (${kos.district}). Apakah masih ada kamar yang tersedia?`,
   );
@@ -260,22 +265,44 @@ function KosDetailContent({ kos }: { kos: Kos }) {
                 Hubungi via WhatsApp
               </Button>
 
-              <Button
-                variant="outline"
-                size="lg"
-                className="w-full"
-                aria-pressed={isSaved}
-                aria-label={
-                  isSaved ? `Hapus ${kos.name} dari favorit` : `Simpan ${kos.name} ke favorit`
-                }
-                onClick={() => setIsSaved((value) => !value)}
-              >
-                <Heart
-                  aria-hidden="true"
-                  className={cn("transition-colors", isSaved && "fill-primary text-primary")}
-                />
-                {isSaved ? "Tersimpan di favorit" : "Simpan ke favorit"}
-              </Button>
+              {user ? (
+                <>
+                  <Button
+                    variant="outline"
+                    size="lg"
+                    className="w-full"
+                    aria-pressed={isSaved}
+                    disabled={favoritesQuery.isPending || toggleFavorite.isPending}
+                    aria-label={
+                      isSaved ? `Hapus ${kos.name} dari favorit` : `Simpan ${kos.name} ke favorit`
+                    }
+                    onClick={() => toggleFavorite.mutate({ kos, saved: isSaved })}
+                  >
+                    <Heart
+                      aria-hidden="true"
+                      className={cn("transition-colors", isSaved && "fill-primary text-primary")}
+                    />
+                    {isSaved ? "Tersimpan di favorit" : "Simpan ke favorit"}
+                  </Button>
+                  {toggleFavorite.isError ? (
+                    <p role="alert" className="text-xs text-destructive">
+                      Gagal memperbarui favorit. Coba lagi ya.
+                    </p>
+                  ) : null}
+                </>
+              ) : (
+                <Button
+                  variant="outline"
+                  size="lg"
+                  className="w-full"
+                  render={
+                    <Link href={`/login?redirect=${encodeURIComponent(`/kos/${kos.slug}`)}`} />
+                  }
+                >
+                  <Heart aria-hidden="true" />
+                  Masuk buat simpan kos
+                </Button>
+              )}
 
               <p className="text-xs text-muted-foreground">
                 Pastikan lu cek kamar langsung sebelum bayar biaya sewa pertama, ya.

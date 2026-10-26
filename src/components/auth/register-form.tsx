@@ -3,7 +3,7 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { UserPlus } from "lucide-react";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { useState } from "react";
 import { Controller, useForm } from "react-hook-form";
 
@@ -44,6 +44,7 @@ export function RegisterFormSkeleton() {
  */
 export function RegisterForm() {
   const router = useRouter();
+  const searchParams = useSearchParams();
   const { signIn } = useAuth();
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
@@ -74,7 +75,9 @@ export function RegisterForm() {
         password: values.password,
       } satisfies RegisterRequest);
       signIn(user);
-      router.replace("/");
+      // Same gated-flow redirect contract as the login form.
+      const redirect = searchParams.get("redirect");
+      router.replace(redirect?.startsWith("/") ? redirect : "/");
     } catch (error) {
       setErrorMessage(
         error instanceof AuthError ? error.message : "Waduh, koneksi bermasalah. Coba lagi ya.",
