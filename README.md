@@ -8,7 +8,7 @@ Aplikasi pencarian kos untuk mahasiswa dan pemilik kos di sekitar Universitas Gu
 - Tailwind CSS v4 + shadcn/ui
 - TanStack Query — fetch & cache
 - React Hook Form + Zod — form & validasi
-- Leaflet + react-leaflet + OpenStreetMap — peta lokasi
+- Leaflet + OpenStreetMap — peta lokasi (dipakai langsung, tanpa `react-leaflet`)
 
 ## Menjalankan
 
@@ -22,6 +22,7 @@ Aplikasi pencarian kos untuk mahasiswa dan pemilik kos di sekitar Universitas Gu
 - Tipe data bersama di `src/types/` = single source of truth. Hal yang belum dikonfirmasi backend ditandai `// ASSUMPTION:`.
 - Filter pencarian disimpan di URL search params supaya hasil bisa di-share.
 - Leaflet tidak support SSR: komponen peta wajib di-load dengan `dynamic(() => import(...), { ssr: false })`.
+- Peta pakai Leaflet langsung (`L.map` di dalam `useEffect` + cleanup `map.remove()`), bukan `react-leaflet`. `MapContainer` bawaan `react-leaflet` 5.0.0 nggak StrictMode-safe (React 19 / App Router default), jadi peta error "Map container is being reused by another instance" di dev.
 - Setiap halaman yang fetch data wajib punya loading / empty / error state.
 - Tombol utama di HP pakai `size="lg"` (target sentuh minimal 44px).
 
