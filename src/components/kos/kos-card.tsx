@@ -64,7 +64,8 @@ export function KosCard({ kos }: KosCardProps) {
           <div className="flex items-center justify-between text-xs text-muted-foreground">
             <span className="flex items-center gap-1">
               <Star aria-hidden="true" className="size-3.5 fill-amber-400 text-amber-400" />
-              {kos.ratingAvg.toFixed(1)}
+              {/* New listings have no reviews yet. */}
+              {kos.ratingAvg > 0 ? kos.ratingAvg.toFixed(1) : "Baru"}
             </span>
             <span className={availableRooms > 0 ? "font-medium text-success" : undefined}>
               {availableRooms > 0 ? `${availableRooms} kamar kosong` : "Kamar penuh"}

@@ -392,7 +392,7 @@ const SEEDS: KosSeed[] = [
 const facilityById = new Map(FACILITIES.map((facility) => [facility.id, facility]));
 
 /** Default house rules for kos without an explicit list in the seed. */
-const DEFAULT_RULES = [
+export const DEFAULT_RULES = [
   "Dilarang mengundang tamu menginap tanpa izin pemilik",
   "Tagihan sewa jatuh tempo setiap tanggal 1",
   "Dilarang membawa hewan peliharaan",
@@ -403,11 +403,11 @@ const DEFAULT_RULES = [
  * ASSUMPTION: deterministic placeholder contact number derived from the seed
  * IDs. Replace with real owner data once the API lands.
  */
-function placeholderOwnerPhone(seedId: number, ownerId: number): string {
+export function placeholderOwnerPhone(seedId: number, ownerId: number): string {
   return `0812${String(seedId).padStart(4, "0")}${String(ownerId).padStart(2, "0")}9`;
 }
 
-function toSlug(name: string): string {
+export function toSlug(name: string): string {
   return name
     .toLowerCase()
     .replace(/[^a-z0-9]+/g, "-")

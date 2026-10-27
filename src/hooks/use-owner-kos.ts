@@ -2,8 +2,8 @@
 
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 
-import { listOwnerKos, updateRoomStatus } from "@/lib/api/owner";
-import type { RoomStatus } from "@/types";
+import { createKos, listOwnerKos, updateKos, updateRoomStatus } from "@/lib/api/owner";
+import type { KosInput, RoomStatus } from "@/types";
 
 /** Listings owned by the signed-in owner; disabled when there is no owner id. */
 export function useOwnerKos(ownerId: number | null) {
@@ -12,6 +12,13 @@ export function useOwnerKos(ownerId: number | null) {
     queryFn: () => (ownerId === null ? Promise.resolve([]) : listOwnerKos(ownerId)),
     enabled: ownerId !== null,
   });
+}
+
+/** Refresh every view that renders listing data after a write. */
+function invalidateListingQueries(queryClient: ReturnType<typeof useQueryClient>) {
+  void queryClient.invalidateQueries({ queryKey: ["owner", "kos"] });
+  void queryClient.invalidateQueries({ queryKey: ["kos"] });
+  void queryClient.invalidateQueries({ queryKey: ["favorites"] });
 }
 
 interface UpdateRoomStatusVariables {
@@ -30,9 +37,37 @@ export function useUpdateRoomStatus() {
   return useMutation({
     mutationFn: ({ kosId, roomId, status }: UpdateRoomStatusVariables) =>
       updateRoomStatus(kosId, roomId, status),
-    onSuccess: () => {
-      void queryClient.invalidateQueries({ queryKey: ["owner", "kos"] });
-      void queryClient.invalidateQueries({ queryKey: ["kos"] });
-    },
+    onSuccess: () => invalidateListingQueries(queryClient),
+  });
+}
+
+interface CreateKosVariables {
+  ownerId: number;
+  input: KosInput;
+}
+
+/** Creates a listing for the signed-in owner. */
+export function useCreateKos() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: ({ ownerId, input }: CreateKosVariables) => createKos(ownerId, input),
+    onSuccess: () => invalidateListingQueries(queryClient),
+  });
+}
+
+interface UpdateKosVariables {
+  ownerId: number;
+  kosId: number;
+  input: KosInput;
+}
+
+/** Updates one of the owner's listings. */
+export function useUpdateKos() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: ({ ownerId, kosId, input }: UpdateKosVariables) => updateKos(ownerId, kosId, input),
+    onSuccess: () => invalidateListingQueries(queryClient),
   });
 }

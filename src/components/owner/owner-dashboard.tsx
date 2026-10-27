@@ -1,8 +1,9 @@
 "use client";
 
-import { DoorClosed, DoorOpen, MapPin, ShieldAlert, UserRound } from "lucide-react";
+import { DoorClosed, DoorOpen, MapPin, Plus } from "lucide-react";
 import Link from "next/link";
 
+import { OwnerOnlyNotice, OwnerSignInPrompt } from "@/components/owner/owner-gate";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -11,42 +12,6 @@ import { useAuth } from "@/hooks/use-auth";
 import { useOwnerKos, useUpdateRoomStatus } from "@/hooks/use-owner-kos";
 import { formatIDR } from "@/lib/format";
 import type { Kos, Room } from "@/types";
-
-function SignInPrompt() {
-  return (
-    <div className="mt-6 rounded-xl border border-dashed p-8 text-center">
-      <UserRound aria-hidden="true" className="mx-auto size-8 text-muted-foreground" />
-      <p className="mt-3 font-heading font-semibold">Masuk buat buka dashboard</p>
-      <p className="mx-auto mt-1 max-w-sm text-sm text-muted-foreground">
-        Dashboard ini buat pemilik kos yang mau memantau listing dan ketersediaan kamar.
-      </p>
-      <div className="mt-5 flex flex-col justify-center gap-2 sm:flex-row">
-        <Button size="lg" render={<Link href="/login?redirect=/dashboard" />}>
-          Masuk
-        </Button>
-        <Button size="lg" variant="outline" render={<Link href="/register?redirect=/dashboard" />}>
-          Daftar
-        </Button>
-      </div>
-    </div>
-  );
-}
-
-function OwnerOnlyNotice() {
-  return (
-    <div className="mt-6 rounded-xl border border-dashed p-8 text-center">
-      <ShieldAlert aria-hidden="true" className="mx-auto size-8 text-muted-foreground" />
-      <p className="mt-3 font-heading font-semibold">Dashboard khusus pemilik kos</p>
-      <p className="mx-auto mt-1 max-w-sm text-sm text-muted-foreground">
-        Akun ini terdaftar sebagai pencari kos. Dashboard ini cuma bisa dibuka pakai akun pemilik
-        kos. Pendaftaran khusus pemilik menyusul.
-      </p>
-      <Button className="mt-5" variant="outline" size="lg" render={<Link href="/kos" />}>
-        Cari kos dulu
-      </Button>
-    </div>
-  );
-}
 
 function DashboardSkeleton() {
   return (
@@ -144,7 +109,7 @@ export function OwnerDashboard() {
   const updateRoom = useUpdateRoomStatus();
 
   if (!user) {
-    return <SignInPrompt />;
+    return <OwnerSignInPrompt redirectTo="/dashboard" />;
   }
 
   if (user.role !== "owner") {
@@ -204,15 +169,27 @@ export function OwnerDashboard() {
         </p>
       ) : null}
 
+      <div className="mt-6 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+        <h2 className="font-heading text-lg font-semibold">Listing lu</h2>
+        <Button size="lg" render={<Link href="/dashboard/kos/baru" />}>
+          <Plus aria-hidden="true" />
+          Tambah kos
+        </Button>
+      </div>
+
       {listings.length === 0 ? (
-        <div className="mt-6 rounded-xl border border-dashed p-8 text-center">
+        <div className="mt-4 rounded-xl border border-dashed p-8 text-center">
           <p className="font-heading font-semibold">Belum ada kos terdaftar</p>
           <p className="mx-auto mt-1 max-w-sm text-sm text-muted-foreground">
-            Akun pemilik ini belum punya listing. Fitur tambah kos menyusul.
+            Akun pemilik ini belum punya listing. Tambah kos pertama lu biar muncul di pencarian.
           </p>
+          <Button className="mt-5" size="lg" render={<Link href="/dashboard/kos/baru" />}>
+            <Plus aria-hidden="true" />
+            Tambah kos
+          </Button>
         </div>
       ) : (
-        <ul className="mt-6 flex flex-col gap-4">
+        <ul className="mt-4 flex flex-col gap-4">
           {listings.map((kos) => (
             <li key={kos.id}>
               <Card>
@@ -229,9 +206,17 @@ export function OwnerDashboard() {
                       </span>
                     </p>
                   </div>
-                  <Button variant="outline" render={<Link href={`/kos/${kos.slug}`} />}>
-                    Lihat halaman
-                  </Button>
+                  <div className="flex flex-wrap gap-2">
+                    <Button
+                      variant="outline"
+                      render={<Link href={`/dashboard/kos/${kos.slug}/edit`} />}
+                    >
+                      Edit
+                    </Button>
+                    <Button variant="outline" render={<Link href={`/kos/${kos.slug}`} />}>
+                      Lihat halaman
+                    </Button>
+                  </div>
                 </CardHeader>
                 <CardContent>
                   <h3 className="text-sm font-semibold">Status kamar</h3>

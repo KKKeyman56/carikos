@@ -150,7 +150,8 @@ function KosDetailContent({ kos }: { kos: Kos }) {
             <GenderBadge gender={kos.gender} />
             <span className="flex items-center gap-1">
               <Star aria-hidden="true" className="size-3.5 fill-amber-400 text-amber-400" />
-              {kos.ratingAvg.toFixed(1)}
+              {/* New listings have no reviews yet. */}
+              {kos.ratingAvg > 0 ? kos.ratingAvg.toFixed(1) : "Baru"}
             </span>
             <span className="flex items-center gap-1">
               <MapPin aria-hidden="true" className="size-3.5" />
