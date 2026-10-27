@@ -78,6 +78,40 @@ export interface Kos {
 }
 
 /**
+ * Room row sent from the owner dashboard form.
+ *
+ * `id` is present only for rooms that already exist, so edits keep the room
+ * identity (and its saved availability status). New rooms omit it.
+ */
+export interface KosRoomInput {
+  id?: number;
+  name: string;
+  size: string;
+  monthlyPrice: number;
+}
+
+/**
+ * Payload for creating or updating a listing from the owner dashboard.
+ *
+ * Derived fields (slug, price range, photos, rating, timestamps) are produced
+ * by the API layer, so they stay out of the form payload.
+ *
+ * ASSUMPTION: the backend will accept this same shape at POST/PUT `/kos`.
+ */
+export interface KosInput {
+  name: string;
+  description: string;
+  gender: KosGender;
+  address: string;
+  district: string;
+  distanceToCampusKm: number;
+  latitude: number;
+  longitude: number;
+  facilityIds: number[];
+  rooms: KosRoomInput[];
+}
+
+/**
  * A saved/bookmarked kos. Kept out of the `Kos` shape because it is per-user
  * state, not a property of the listing itself.
  *
