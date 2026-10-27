@@ -32,6 +32,16 @@ interface StoredUser extends User {
 
 const SEED_USERS: StoredUser[] = [
   {
+    // id matches the ownerId of the mock listings owned by this account.
+    id: 2,
+    name: "Budi Santoso",
+    email: "pemilik@example.com",
+    phone: "081234560003",
+    role: "owner",
+    avatarUrl: null,
+    password: "password123",
+  },
+  {
     id: 1001,
     name: "Ayu Purnama",
     email: "ayu@example.com",

@@ -1,6 +1,7 @@
 import type { Facility, Kos, KosFilters, Paginated } from "@/types";
 
 import { FACILITIES, MOCK_KOS } from "@/mocks/kos";
+import { withRoomStatusOverrides } from "@/mocks/room-status";
 
 // NOTE: artificial latency so loading states are visible during development;
 // drop this once the real API is wired up.
@@ -70,7 +71,7 @@ export async function listKos(filters: KosFilters): Promise<Paginated<Kos>> {
   // NOTE: pagination is deferred until the real API lands; the mock always
   // returns a single page containing everything.
   return {
-    data: sorted,
+    data: sorted.map(withRoomStatusOverrides),
     page: 1,
     perPage: sorted.length,
     totalItems: sorted.length,
@@ -84,10 +85,11 @@ export async function getKosFacilities(): Promise<Facility[]> {
 }
 
 /**
- * Finds a single kos by slug for the detail page (built in Tahap 3).
+ * Finds a single kos by slug for the detail page.
  * Returns null when nothing matches, so the page can render a 404.
  */
 export async function getKos(slug: string): Promise<Kos | null> {
   await sleep(MOCK_LATENCY_MS);
-  return MOCK_KOS.find((kos) => kos.slug === slug) ?? null;
+  const kos = MOCK_KOS.find((item) => item.slug === slug);
+  return kos ? withRoomStatusOverrides(kos) : null;
 }
