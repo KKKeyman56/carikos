@@ -1,6 +1,7 @@
 import type { Favorite, Kos } from "@/types";
 
-import { MOCK_KOS } from "@/mocks/kos";
+import { getAllKos } from "@/mocks/owner-kos-store";
+import { withRoomStatusOverrides } from "@/mocks/room-status";
 
 // NOTE: artificial latency so loading states are visible during development;
 // drop this once the real API is wired up.
@@ -54,11 +55,14 @@ function persistFavorites(userId: number, favorites: Favorite[]): void {
 export async function listFavorites(userId: number): Promise<Kos[]> {
   await sleep(MOCK_LATENCY_MS);
 
+  const allKos = getAllKos();
+
   return loadFavorites(userId)
     .slice()
     .sort((a, b) => Date.parse(b.createdAt) - Date.parse(a.createdAt))
-    .map((favorite) => MOCK_KOS.find((kos) => kos.id === favorite.kosId))
-    .filter((kos): kos is Kos => kos !== undefined);
+    .map((favorite) => allKos.find((kos) => kos.id === favorite.kosId))
+    .filter((kos): kos is Kos => kos !== undefined)
+    .map(withRoomStatusOverrides);
 }
 
 /**
@@ -70,7 +74,7 @@ export async function listFavorites(userId: number): Promise<Kos[]> {
 export async function addFavorite(userId: number, kosId: number): Promise<void> {
   await sleep(MOCK_LATENCY_MS);
 
-  if (!MOCK_KOS.some((kos) => kos.id === kosId)) {
+  if (!getAllKos().some((kos) => kos.id === kosId)) {
     throw new Error("Kos tidak ditemukan.");
   }
 
