@@ -3,7 +3,7 @@
 import "leaflet/dist/leaflet.css";
 
 import L from "leaflet";
-import { MapContainer, Marker, Popup, TileLayer } from "react-leaflet";
+import { useEffect, useRef } from "react";
 
 import type { Kos } from "@/types";
 
@@ -23,25 +23,44 @@ interface KosLocationMapProps {
 /**
  * Interactive location map for one kos. Rendered client-side only via the
  * dynamic import in `kos-detail.tsx` (Leaflet needs `window`).
+ *
+ * NOTE: Leaflet is driven directly here instead of through `react-leaflet`.
+ * Its `MapContainer` calls `map.remove()` during StrictMode's simulated
+ * unmount (default in App Router) but never re-creates the map, which crashes
+ * the tile layer with "Map container is being reused by another instance".
+ * A plain effect owns the map lifecycle, so mount → cleanup → remount works.
  */
 export function KosLocationMap({ kos }: KosLocationMapProps) {
+  const containerRef = useRef<HTMLDivElement | null>(null);
+
+  useEffect(() => {
+    const container = containerRef.current;
+    if (container === null) return;
+
+    const map = L.map(container, {
+      center: [kos.latitude, kos.longitude],
+      zoom: 15,
+      scrollWheelZoom: false,
+    });
+
+    L.tileLayer("https://tile.openstreetmap.org/{z}/{x}/{y}.png", {
+      attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>',
+    }).addTo(map);
+
+    const popup = document.createElement("p");
+    popup.textContent = kos.name;
+
+    L.marker([kos.latitude, kos.longitude], { icon: PIN_ICON }).addTo(map).bindPopup(popup);
+
+    return () => {
+      map.remove();
+    };
+  }, [kos.latitude, kos.longitude, kos.name]);
+
   return (
     // `isolate` keeps Leaflet's high internal z-indexes from covering the navbar.
     <div className="relative isolate h-64 w-full overflow-hidden rounded-xl border">
-      <MapContainer
-        center={[kos.latitude, kos.longitude]}
-        zoom={15}
-        scrollWheelZoom={false}
-        className="size-full"
-      >
-        <TileLayer
-          attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
-          url="https://tile.openstreetmap.org/{z}/{x}/{y}.png"
-        />
-        <Marker position={[kos.latitude, kos.longitude]} icon={PIN_ICON}>
-          <Popup>{kos.name}</Popup>
-        </Marker>
-      </MapContainer>
+      <div ref={containerRef} aria-hidden="true" className="size-full" />
 
       {/* Map is decorative here; screen readers use the adjacent address text. */}
       <p className="sr-only">
