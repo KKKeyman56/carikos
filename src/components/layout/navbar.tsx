@@ -43,7 +43,11 @@ function NavActions() {
 export function Navbar() {
   const { user, signOut } = useAuth();
   const navLinks = user
-    ? [...NAV_LINKS, { href: "/favorit", label: "Favorit" } as const]
+    ? [
+        ...NAV_LINKS,
+        { href: "/favorit", label: "Favorit" } as const,
+        ...(user.role === "owner" ? [{ href: "/dashboard", label: "Dashboard" } as const] : []),
+      ]
     : NAV_LINKS;
 
   return (

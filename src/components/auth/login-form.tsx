@@ -166,7 +166,9 @@ export function LoginForm() {
         {/* ASSUMPTION: mock demo credentials so the flow is testable before
             the backend lands. */}
         <p className="mt-2 rounded-lg bg-muted/50 px-3 py-2 text-center text-xs text-muted-foreground">
-          Akun demo: <code>ayu@example.com</code> / <code>password123</code>
+          Akun demo pencari: <code>ayu@example.com</code> / <code>password123</code>
+          <br />
+          Akun demo pemilik: <code>pemilik@example.com</code> / <code>password123</code>
         </p>
       </CardContent>
     </Card>
