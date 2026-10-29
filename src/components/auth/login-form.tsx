@@ -7,6 +7,7 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 
+import { SignedInNotice } from "@/components/auth/signed-in-notice";
 import { FormField } from "@/components/form/form-field";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -52,7 +53,7 @@ export function LoginForm() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const redirectTo = safeRedirectPath(searchParams.get("redirect"));
-  const { signIn } = useAuth();
+  const { user, signIn, signOut } = useAuth();
   const [showsPassword, setShowsPassword] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
@@ -80,6 +81,12 @@ export function LoginForm() {
       );
     }
   });
+
+  // Do not show the login form to a signed-in visitor: a failed submit would
+  // keep the old session alive and look like the new password worked.
+  if (user) {
+    return <SignedInNotice user={user} redirectTo={redirectTo} onSignOut={signOut} />;
+  }
 
   return (
     <Card className="py-4">

@@ -26,6 +26,7 @@ Aplikasi pencarian kos untuk mahasiswa dan pemilik kos di sekitar Universitas Gu
 - Setiap halaman yang fetch data wajib punya loading / empty / error state.
 - Tombol utama di HP pakai `size="lg"` (target sentuh minimal 44px).
 - Listing yang dibuat/diedit dari dashboard owner disimpan sebagai overlay localStorage (`carikos.ownerKos`), sama seperti status kamar. Hapus modul mock-nya begitu backend sudah pegang data listing.
+- Akun hasil daftar, perubahan profil, dan ganti password juga disimpan sebagai overlay localStorage (`carikos.registeredUsers`, `carikos.userPatches`) — hanya untuk fase mock.
 
 ## Git workflow
 

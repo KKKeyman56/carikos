@@ -47,6 +47,7 @@ export function Navbar() {
         ...NAV_LINKS,
         { href: "/favorit", label: "Favorit" } as const,
         ...(user.role === "owner" ? [{ href: "/dashboard", label: "Dashboard" } as const] : []),
+        { href: "/profil", label: "Profil" } as const,
       ]
     : NAV_LINKS;
 
