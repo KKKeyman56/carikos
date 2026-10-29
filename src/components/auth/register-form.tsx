@@ -7,6 +7,7 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { useState } from "react";
 import { Controller, useForm, useWatch } from "react-hook-form";
 
+import { SignedInNotice } from "@/components/auth/signed-in-notice";
 import { FormField } from "@/components/form/form-field";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -53,7 +54,7 @@ export function RegisterForm() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const redirectTo = safeRedirectPath(searchParams.get("redirect"));
-  const { signIn } = useAuth();
+  const { user, signIn, signOut } = useAuth();
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
   // Opening signup from the owner dashboard pre-selects the owner role.
@@ -98,6 +99,12 @@ export function RegisterForm() {
       );
     }
   });
+
+  // Signup only makes sense for guests; signed-in visitors get an explicit
+  // notice instead of a second account silently replacing their session.
+  if (user) {
+    return <SignedInNotice user={user} redirectTo={redirectTo} onSignOut={signOut} />;
+  }
 
   return (
     <Card className="py-4">
