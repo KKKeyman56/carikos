@@ -1,11 +1,11 @@
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
-import { UserPlus } from "lucide-react";
+import { Building2, Search, UserPlus } from "lucide-react";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useState } from "react";
-import { Controller, useForm } from "react-hook-form";
+import { Controller, useForm, useWatch } from "react-hook-form";
 
 import { FormField } from "@/components/form/form-field";
 import { Button } from "@/components/ui/button";
@@ -18,6 +18,11 @@ import { AuthError, register as registerAccount } from "@/lib/api/auth";
 import { safeRedirectPath } from "@/lib/utils";
 import type { RegisterRequest } from "@/types";
 import { registerSchema, type RegisterFormData } from "@/lib/validations/auth";
+
+const ROLE_OPTIONS = [
+  { value: "seeker", label: "Cari kos", description: "Buat nyari kamar", icon: Search },
+  { value: "owner", label: "Punya kos", description: "Buat pasang listing", icon: Building2 },
+] as const;
 
 /** Shell shown while the register page frame hydrates. */
 export function RegisterFormSkeleton() {
@@ -32,6 +37,7 @@ export function RegisterFormSkeleton() {
           {Array.from({ length: 6 }).map((_, index) => (
             <Skeleton key={index} className="h-11 w-full" />
           ))}
+          <Skeleton className="h-16 w-full" />
         </div>
       </div>
     </Card>
@@ -50,10 +56,14 @@ export function RegisterForm() {
   const { signIn } = useAuth();
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
+  // Opening signup from the owner dashboard pre-selects the owner role.
+  const defaultRole = redirectTo?.startsWith("/dashboard") ? "owner" : "seeker";
+
   const {
     register,
     control,
     handleSubmit,
+    setValue,
     formState: { errors, isSubmitting },
   } = useForm<RegisterFormData>({
     resolver: zodResolver(registerSchema),
@@ -63,9 +73,11 @@ export function RegisterForm() {
       email: "",
       password: "",
       confirmPassword: "",
+      role: defaultRole,
       terms: false,
     },
   });
+  const role = useWatch({ control, name: "role" }) ?? defaultRole;
 
   const onSubmit = handleSubmit(async (values) => {
     setErrorMessage(null);
@@ -75,10 +87,11 @@ export function RegisterForm() {
         phone: values.phone,
         email: values.email,
         password: values.password,
+        role: values.role,
       } satisfies RegisterRequest);
       signIn(user);
-      // Same gated-flow redirect contract as the login form.
-      router.replace(redirectTo ?? "/");
+      // Gated flows keep their redirect; otherwise owners land on their dashboard.
+      router.replace(redirectTo ?? (user.role === "owner" ? "/dashboard" : "/"));
     } catch (error) {
       setErrorMessage(
         error instanceof AuthError ? error.message : "Waduh, koneksi bermasalah. Coba lagi ya.",
@@ -90,7 +103,7 @@ export function RegisterForm() {
     <Card className="py-4">
       <CardHeader>
         <CardTitle className="text-lg font-semibold">Buat akun Carikos</CardTitle>
-        <CardDescription>Isi data singkat doang, nanti bisa lurus cari kos.</CardDescription>
+        <CardDescription>Pilih tipe akun, isi data singkat, langsung jalan.</CardDescription>
       </CardHeader>
       <CardContent>
         <form onSubmit={onSubmit} noValidate className="flex flex-col gap-4">
@@ -102,6 +115,52 @@ export function RegisterForm() {
               {errorMessage}
             </div>
           ) : null}
+
+          <fieldset aria-describedby={errors.role ? "register-role-error" : undefined}>
+            <legend className="text-sm font-medium">Mau pakai Carikos buat apa?</legend>
+            <div role="group" aria-label="Tipe akun" className="mt-2 grid gap-2 sm:grid-cols-2">
+              {ROLE_OPTIONS.map((option) => {
+                const selected = role === option.value;
+                const Icon = option.icon;
+                return (
+                  <button
+                    key={option.value}
+                    type="button"
+                    aria-pressed={selected}
+                    className={`flex min-h-16 items-center gap-3 rounded-lg border p-3 text-left transition-colors ${
+                      selected
+                        ? "border-primary bg-primary text-primary-foreground"
+                        : "border-border bg-background hover:bg-muted"
+                    }`}
+                    onClick={() =>
+                      setValue("role", option.value, { shouldValidate: true, shouldDirty: true })
+                    }
+                  >
+                    <Icon aria-hidden="true" className="size-5 shrink-0" />
+                    <span className="flex flex-col">
+                      <span className="text-sm font-medium">{option.label}</span>
+                      <span
+                        className={`text-xs ${
+                          selected ? "text-primary-foreground/80" : "text-muted-foreground"
+                        }`}
+                      >
+                        {option.description}
+                      </span>
+                    </span>
+                  </button>
+                );
+              })}
+            </div>
+            {errors.role ? (
+              <p
+                id="register-role-error"
+                role="alert"
+                className="mt-1 text-xs font-medium text-destructive"
+              >
+                {errors.role.message}
+              </p>
+            ) : null}
+          </fieldset>
 
           <FormField id="register-name" label="Nama lengkap" error={errors.name?.message}>
             <Input

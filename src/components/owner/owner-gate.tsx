@@ -37,7 +37,7 @@ export function OwnerOnlyNotice() {
       <p className="mt-3 font-heading font-semibold">Dashboard khusus pemilik kos</p>
       <p className="mx-auto mt-1 max-w-sm text-sm text-muted-foreground">
         Akun ini terdaftar sebagai pencari kos. Dashboard ini cuma bisa dibuka pakai akun pemilik
-        kos. Pendaftaran khusus pemilik menyusul.
+        kos. Mau pasang kos? Keluar dulu, lalu daftar akun baru dengan tipe &quot;Punya kos&quot;.
       </p>
       <Button className="mt-5" variant="outline" size="lg" render={<Link href="/kos" />}>
         Cari kos dulu

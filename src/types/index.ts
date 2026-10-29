@@ -160,4 +160,18 @@ export interface RegisterRequest {
   phone: string;
   email: string;
   password: string;
+  /** Role picked at signup; admin accounts are provisioned separately. */
+  role: "seeker" | "owner";
+}
+
+/** Editable account fields on the profile page. */
+export interface UpdateProfileRequest {
+  name: string;
+  phone: string;
+}
+
+/** Password change from the profile page (mock verifies the current one). */
+export interface ChangePasswordRequest {
+  currentPassword: string;
+  newPassword: string;
 }
