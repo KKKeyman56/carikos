@@ -2,6 +2,7 @@ import type { Facility, Kos, KosFilters, Paginated } from "@/types";
 
 import { FACILITIES } from "@/mocks/kos";
 import { getAllKos } from "@/mocks/owner-kos-store";
+import { withReviewAggregates } from "@/mocks/reviews";
 import { withRoomStatusOverrides } from "@/mocks/room-status";
 
 // NOTE: artificial latency so loading states are visible during development;
@@ -26,7 +27,7 @@ export async function listKos(filters: KosFilters): Promise<Paginated<Kos>> {
   const query = filters.query?.trim().toLowerCase();
   const facilityIds = filters.facilityIds ?? [];
 
-  const filtered = getAllKos().filter((kos) => {
+  const filtered = withReviewAggregates(getAllKos()).filter((kos) => {
     if (filters.gender && kos.gender !== filters.gender) return false;
     // ASSUMPTION: price filtering compares against the kos starting price.
     if (filters.minPrice !== undefined && kos.monthlyPriceMin < filters.minPrice) return false;
@@ -91,6 +92,6 @@ export async function getKosFacilities(): Promise<Facility[]> {
  */
 export async function getKos(slug: string): Promise<Kos | null> {
   await sleep(MOCK_LATENCY_MS);
-  const kos = getAllKos().find((item) => item.slug === slug);
+  const kos = withReviewAggregates(getAllKos()).find((item) => item.slug === slug);
   return kos ? withRoomStatusOverrides(kos) : null;
 }

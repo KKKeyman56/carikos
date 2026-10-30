@@ -53,6 +53,14 @@ export function saveStoredKos(kos: Kos): void {
 }
 
 /**
+ * Fills `reviewCount` for listings saved before reviews existed. Seed listings
+ * inherit the count from the seed record; owner-created listings start at 0.
+ */
+function withReviewCount(kos: Kos, fallback: number): Kos {
+  return typeof kos.reviewCount === "number" ? kos : { ...kos, reviewCount: fallback };
+}
+
+/**
  * Seed catalogue with the owner overlay applied: edited listings replace the
  * seeded version by id, and newly created listings are prepended.
  */
@@ -61,9 +69,17 @@ export function getAllKos(): Kos[] {
   if (stored.length === 0) return MOCK_KOS;
 
   const storedById = new Map(stored.map((kos) => [kos.id, kos]));
-  const seeded = MOCK_KOS.map((kos) => storedById.get(kos.id) ?? kos);
   const seededIds = new Set(MOCK_KOS.map((kos) => kos.id));
-  const created = stored.filter((kos) => !seededIds.has(kos.id));
+
+  const seeded = MOCK_KOS.map((kos) => {
+    const storedKos = storedById.get(kos.id);
+    if (!storedKos) return kos;
+    // Keep the seed's review count when an older stored copy predates reviews.
+    return withReviewCount({ ...kos, ...storedKos }, kos.reviewCount);
+  });
+  const created = stored
+    .filter((kos) => !seededIds.has(kos.id))
+    .map((kos) => withReviewCount(kos, 0));
 
   return [...created, ...seeded];
 }
