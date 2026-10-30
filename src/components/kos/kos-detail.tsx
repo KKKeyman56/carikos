@@ -8,6 +8,7 @@ import type { ReactNode } from "react";
 
 import { GenderBadge } from "@/components/kos/gender-badge";
 import { KosGallery } from "@/components/kos/kos-gallery";
+import { ReviewSection } from "@/components/kos/review-section";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
@@ -151,7 +152,14 @@ function KosDetailContent({ kos }: { kos: Kos }) {
             <span className="flex items-center gap-1">
               <Star aria-hidden="true" className="size-3.5 fill-amber-400 text-amber-400" />
               {/* New listings have no reviews yet. */}
-              {kos.ratingAvg > 0 ? kos.ratingAvg.toFixed(1) : "Baru"}
+              {kos.ratingAvg > 0 ? (
+                <>
+                  {kos.ratingAvg.toFixed(1)}
+                  <span className="text-xs">({kos.reviewCount})</span>
+                </>
+              ) : (
+                "Baru"
+              )}
             </span>
             <span className="flex items-center gap-1">
               <MapPin aria-hidden="true" className="size-3.5" />
@@ -228,6 +236,8 @@ function KosDetailContent({ kos }: { kos: Kos }) {
           </p>
           <KosLocationMap kos={kos} />
         </section>
+
+        <ReviewSection kos={kos} />
       </div>
 
       <aside aria-label="Ringkasan dan kontak" className="min-w-0">

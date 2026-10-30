@@ -1,6 +1,7 @@
 import type { Favorite, Kos } from "@/types";
 
 import { getAllKos } from "@/mocks/owner-kos-store";
+import { withReviewAggregates } from "@/mocks/reviews";
 import { withRoomStatusOverrides } from "@/mocks/room-status";
 
 // NOTE: artificial latency so loading states are visible during development;
@@ -55,7 +56,7 @@ function persistFavorites(userId: number, favorites: Favorite[]): void {
 export async function listFavorites(userId: number): Promise<Kos[]> {
   await sleep(MOCK_LATENCY_MS);
 
-  const allKos = getAllKos();
+  const allKos = withReviewAggregates(getAllKos());
 
   return loadFavorites(userId)
     .slice()

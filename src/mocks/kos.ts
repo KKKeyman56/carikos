@@ -40,6 +40,8 @@ export interface KosSeed {
   /** Optional house rules; falls back to a shared default set. */
   rules?: string[];
   ratingAvg: number;
+  /** Optional seed count; a deterministic mock value is derived when omitted. */
+  reviewCount?: number;
   createdAt: string;
   updatedAt: string;
   /** Optional photo overrides; local files are served from /public/photos. */
@@ -448,6 +450,9 @@ function kosFromSeed(seed: KosSeed): Kos {
     rules: seed.rules ?? DEFAULT_RULES,
     ownerPhone: placeholderOwnerPhone(seed.id, seed.ownerId),
     ratingAvg: seed.ratingAvg,
+    // ASSUMPTION: seed listings already have historical ratings without text;
+    // the backend will return the real count once reviews are persisted there.
+    reviewCount: seed.reviewCount ?? 8 + ((seed.id * 7) % 40),
     createdAt: seed.createdAt,
     updatedAt: seed.updatedAt,
   };

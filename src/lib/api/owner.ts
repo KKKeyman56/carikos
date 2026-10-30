@@ -93,6 +93,7 @@ export async function createKos(ownerId: number, input: KosInput): Promise<Kos> 
     ownerPhone: placeholderOwnerPhone(id, ownerId),
     // A fresh listing has no reviews yet; the UI renders this as "Baru".
     ratingAvg: 0,
+    reviewCount: 0,
     createdAt: now,
     updatedAt: now,
   };

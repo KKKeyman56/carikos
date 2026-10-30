@@ -72,6 +72,11 @@ export interface Kos {
   ownerPhone: string;
   /** 0-5, rounded to one decimal. */
   ratingAvg: number;
+  /**
+   * Total ratings behind `ratingAvg`, including ratings left without written
+   * text. Used to weight new reviews into the aggregate.
+   */
+  reviewCount: number;
   /** ISO date strings. */
   createdAt: string;
   updatedAt: string;
@@ -130,6 +135,31 @@ export interface Paginated<T> {
   page: number;
   perPage: number;
   totalItems: number;
+}
+
+/**
+ * One written review from a user for a kos listing.
+ *
+ * ASSUMPTION: `userName` is denormalized for the mock; the real API may join
+ * user data instead. One user can leave at most one review per kos.
+ */
+export interface Review {
+  id: number;
+  kosId: number;
+  userId: number;
+  userName: string;
+  /** Integer 1-5. */
+  rating: number;
+  comment: string;
+  /** ISO date strings. */
+  createdAt: string;
+  updatedAt: string;
+}
+
+/** Payload for creating or updating a review. */
+export interface ReviewInput {
+  rating: number;
+  comment: string;
 }
 
 /** Search filter values; kept in URL search params so results are shareable. */
