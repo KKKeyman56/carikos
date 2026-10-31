@@ -1,7 +1,8 @@
 "use client";
 
 import { useQuery } from "@tanstack/react-query";
-import { Search, SlidersHorizontal } from "lucide-react";
+import { List, Map as MapIcon, Search, SlidersHorizontal } from "lucide-react";
+import dynamic from "next/dynamic";
 
 import { KosCard, KosCardSkeleton } from "@/components/kos/kos-card";
 import { KosFiltersSidebar } from "@/components/kos/kos-filters-sidebar";
@@ -15,10 +16,20 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { Skeleton } from "@/components/ui/skeleton";
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
 import { useKosFilters } from "@/hooks/use-kos-filters";
 import { getKosFacilities, listKos } from "@/lib/api/kos";
 import type { KosFilters } from "@/types";
+
+// Leaflet accesses `window`, so the results map must load client-side only.
+const KosResultsMap = dynamic(
+  () => import("@/components/kos/kos-results-map").then((m) => m.KosResultsMap),
+  {
+    ssr: false,
+    loading: () => <Skeleton className="h-[420px] w-full rounded-xl sm:h-[520px]" />,
+  },
+);
 
 const SORT_OPTIONS: Array<{
   value: NonNullable<KosFilters["sort"]>;
@@ -43,6 +54,10 @@ function ResultsSkeleton() {
   );
 }
 
+function MapSkeleton() {
+  return <Skeleton className="mt-6 h-[420px] w-full rounded-xl sm:h-[520px]" />;
+}
+
 /**
  * Client-side search view: filter state lives in the URL, data comes from
  * `lib/api` through TanStack Query with loading / empty / error states.
@@ -51,12 +66,15 @@ export function KosSearch() {
   const {
     filters,
     draft,
+    view,
     isUpdating,
     setFilters,
     handleDraftChange,
     resetFilters,
     activeFilterCount,
   } = useKosFilters();
+
+  const isMapView = view === "map";
 
   const kosListQuery = useQuery({
     queryKey: ["kos", "list", filters],
@@ -158,7 +176,11 @@ export function KosSearch() {
 
         {/* Result states */}
         {kosListQuery.isPending ? (
-          <ResultsSkeleton />
+          isMapView ? (
+            <MapSkeleton />
+          ) : (
+            <ResultsSkeleton />
+          )
         ) : kosListQuery.isError ? (
           <div className="mt-6 rounded-xl border border-dashed p-8 text-center">
             <p className="font-semibold">Gagal memuat daftar kos</p>
@@ -181,16 +203,45 @@ export function KosSearch() {
           </div>
         ) : kosList ? (
           <div className={`mt-6 transition-opacity ${isUpdating ? "opacity-60" : ""}`}>
-            <p className="text-sm text-muted-foreground" aria-live="polite">
-              {kosList.totalItems} kos ditemukan
-            </p>
-            <ul className="mt-3 grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-3">
-              {kosList.data.map((kos) => (
-                <li key={kos.id}>
-                  <KosCard kos={kos} />
-                </li>
-              ))}
-            </ul>
+            <div className="flex flex-wrap items-center justify-between gap-3">
+              <p className="text-sm text-muted-foreground" aria-live="polite">
+                {kosList.totalItems} kos ditemukan
+              </p>
+              <Button
+                type="button"
+                variant="outline"
+                size="lg"
+                aria-pressed={isMapView}
+                onClick={() => setFilters({ view: isMapView ? null : "map" })}
+              >
+                {isMapView ? <List aria-hidden="true" /> : <MapIcon aria-hidden="true" />}
+                {isMapView ? "Lihat daftar" : "Lihat peta"}
+              </Button>
+            </div>
+
+            {isMapView ? (
+              <div className="mt-3">
+                <KosResultsMap kosList={kosList.data} />
+                <ul
+                  aria-label="Kos di peta"
+                  className="mt-4 flex snap-x gap-3 overflow-x-auto pb-2"
+                >
+                  {kosList.data.map((kos) => (
+                    <li key={kos.id} className="w-72 shrink-0 snap-start">
+                      <KosCard kos={kos} />
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            ) : (
+              <ul className="mt-3 grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-3">
+                {kosList.data.map((kos) => (
+                  <li key={kos.id}>
+                    <KosCard kos={kos} />
+                  </li>
+                ))}
+              </ul>
+            )}
           </div>
         ) : null}
       </section>

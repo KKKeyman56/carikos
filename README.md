@@ -20,7 +20,7 @@ Aplikasi pencarian kos untuk mahasiswa dan pemilik kos di sekitar Universitas Gu
 
 - Semua request ke backend hanya lewat `src/lib/api/` (baca README di folder itu).
 - Tipe data bersama di `src/types/` = single source of truth. Hal yang belum dikonfirmasi backend ditandai `// ASSUMPTION:`.
-- Filter pencarian disimpan di URL search params supaya hasil bisa di-share.
+- Filter pencarian dan mode tampilan list/peta disimpan di URL search params (`?view=map`) supaya hasil bisa di-share.
 - Leaflet tidak support SSR: komponen peta wajib di-load dengan `dynamic(() => import(...), { ssr: false })`.
 - Peta pakai Leaflet langsung (`L.map` di dalam `useEffect` + cleanup `map.remove()`), bukan `react-leaflet`. `MapContainer` bawaan `react-leaflet` 5.0.0 nggak StrictMode-safe (React 19 / App Router default), jadi peta error "Map container is being reused by another instance" di dev.
 - Setiap halaman yang fetch data wajib punya loading / empty / error state.
