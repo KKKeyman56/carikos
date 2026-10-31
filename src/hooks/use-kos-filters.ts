@@ -12,7 +12,7 @@ type DraftKey = "q" | "minPrice" | "maxPrice";
 
 export type FilterUpdate = Partial<
   Record<
-    "q" | "gender" | "minPrice" | "maxPrice" | "facilities" | "maxDistance" | "sort",
+    "q" | "gender" | "minPrice" | "maxPrice" | "facilities" | "maxDistance" | "sort" | "view",
     string | null
   >
 >;
@@ -128,6 +128,9 @@ export function useKosFilters() {
     };
   }, [searchParams]);
 
+  // Map/list view is stored in the URL too, so shared links keep the chosen view.
+  const view = searchParams.get("view") === "map" ? "map" : "list";
+
   /** Active filter count for the mobile filter button badge (query excluded). */
   const activeFilterCount = useMemo(
     () =>
@@ -144,6 +147,7 @@ export function useKosFilters() {
   return {
     filters,
     draft,
+    view,
     isUpdating,
     setFilters,
     handleDraftChange,
